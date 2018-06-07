@@ -11,6 +11,7 @@ const txUtils = require('./lib/util')
 const cleanErrorStack = require('../../lib/cleanErrorStack')
 const log = require('loglevel')
 const recipientBlacklistChecker = require('./lib/recipient-blacklist-checker')
+const recipientScamChecker = require('./lib/recipient-scam-checker')
 
 /**
   Transaction Controller is an aggregate of sub-controllers and trackers
@@ -125,7 +126,6 @@ class TransactionController extends EventEmitter {
     log.debug(`MetaMaskController newUnapprovedTransaction ${JSON.stringify(txParams)}`)
     const initialTxMeta = await this.addUnapprovedTransaction(txParams)
     initialTxMeta.origin = opts.origin
-    initialTxMeta.scamWarning = 'warning added here\r\nnewline\r\nanother line'
     this.txStateManager.updateTx(initialTxMeta, '#newUnapprovedTransaction - adding the origin')
     // listen for tx completion (success, fail)
     return new Promise((resolve, reject) => {
@@ -163,6 +163,8 @@ class TransactionController extends EventEmitter {
     try {
       // check whether recipient account is blacklisted
       recipientBlacklistChecker.checkAccount(txMeta.metamaskNetworkId, normalizedTxParams.to)
+
+      txMeta.scamWarning = await recipientScamChecker.checkAccount(txMeta.metamaskNetworkId, normalizedTxParams.to)
       // add default tx params
       txMeta = await this.addTxGasDefaults(txMeta)
     } catch (error) {
