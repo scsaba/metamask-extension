@@ -105,7 +105,7 @@ ConfirmTxScreen.prototype.render = function () {
         }),
       ]),
 
-      warningIfExists(props.warning),
+      warningIfExists(props.warning || txData.scamWarning),
 
       currentTxView({
         // Properties

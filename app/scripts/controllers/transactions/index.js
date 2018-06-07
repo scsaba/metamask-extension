@@ -124,6 +124,7 @@ class TransactionController extends EventEmitter {
     log.debug(`MetaMaskController newUnapprovedTransaction ${JSON.stringify(txParams)}`)
     const initialTxMeta = await this.addUnapprovedTransaction(txParams)
     initialTxMeta.origin = opts.origin
+    initialTxMeta.scamWarning = 'warning added here\r\nnewline\r\nanother line'
     this.txStateManager.updateTx(initialTxMeta, '#newUnapprovedTransaction - adding the origin')
     // listen for tx completion (success, fail)
     return new Promise((resolve, reject) => {
