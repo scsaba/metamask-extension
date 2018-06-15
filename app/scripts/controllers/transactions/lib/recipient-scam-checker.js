@@ -18,7 +18,7 @@ async function checkAccount (networkId, account) {
   
   const response = await fetch(`https://etherscamdb.info/api/check/${account}/`)
   const responseJson = await response.json()
-  if (!responseJson.success || !responseJson.blocked) {
+  if (!responseJson.success || responseJson.result !== 'blocked') {
     return
   }
 
