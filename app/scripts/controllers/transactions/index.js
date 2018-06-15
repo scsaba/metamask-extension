@@ -168,7 +168,7 @@ class TransactionController extends EventEmitter {
       // add default tx params
       txMeta = await this.addTxGasDefaults(txMeta)
     } catch (error) {
-      console.log(error)
+      log.warn(error)
       this.txStateManager.setTxStatusFailed(txMeta.id, error)
       throw error
     }
@@ -267,7 +267,12 @@ class TransactionController extends EventEmitter {
       // must set transaction to submitted/failed before releasing lock
       nonceLock.releaseLock()
     } catch (err) {
-      this.txStateManager.setTxStatusFailed(txId, err)
+      // this is try-catch wrapped so that we can guarantee that the nonceLock is released
+      try {
+        this.txStateManager.setTxStatusFailed(txId, err)
+      } catch (err) {
+        log.error(err)
+      }
       // must set transaction to submitted/failed before releasing lock
       if (nonceLock) nonceLock.releaseLock()
       // continue with error chain
