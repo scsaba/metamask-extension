@@ -48,6 +48,7 @@ const seedPhraseVerifier = require('./lib/seed-phrase-verifier')
 const cleanErrorStack = require('./lib/cleanErrorStack')
 const DiagnosticsReporter = require('./lib/diagnostics-reporter')
 const log = require('loglevel')
+const accountExporter = require('./lib/account-exporter')
 
 module.exports = class MetamaskController extends EventEmitter {
 
@@ -387,6 +388,7 @@ module.exports = class MetamaskController extends EventEmitter {
       createNewVaultAndRestore: nodeify(this.createNewVaultAndRestore, this),
       addNewKeyring: nodeify(keyringController.addNewKeyring, keyringController),
       exportAccount: nodeify(keyringController.exportAccount, keyringController),
+      exportAccountJson: nodeify(this.exportAccountJson, this),
 
       // txController
       cancelTransaction: nodeify(txController.cancelTransaction, txController),
@@ -656,6 +658,10 @@ module.exports = class MetamaskController extends EventEmitter {
     this.preferencesController.setAddresses(allAccounts)
     // set new account as selected
     await this.preferencesController.setSelectedAddress(accounts[0])
+  }
+
+  exportAccountJson (privateKey) {
+    return accountExporter.exportAccount(privateKey)  
   }
 
   // ---------------------------------------------------------------------------

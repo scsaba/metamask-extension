@@ -119,6 +119,12 @@ ExportAccountView.prototype.render = function () {
         },
         onClick: () => exportAsFile(`MetaMask ${nickname} Private Key`, plainKey),
       }, 'Save as File'),
+      h('button', {
+        style: {
+          marginLeft: '10px',
+        },
+        onClick: () => this.props.dispatch(actions.exportAccountJson(plainKey)),
+      }, 'Save as UTC JSON File'),
     ])
   }
 }

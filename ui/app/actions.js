@@ -11,6 +11,7 @@ const {
 const ethUtil = require('ethereumjs-util')
 const { fetchLocale } = require('../i18n-helper')
 const log = require('loglevel')
+const exportAsFile = require('./util').exportAsFile
 
 var actions = {
   _setBackgroundConnection: _setBackgroundConnection,
@@ -127,6 +128,7 @@ var actions = {
   requestExportAccount: requestExportAccount,
   EXPORT_ACCOUNT: 'EXPORT_ACCOUNT',
   exportAccount: exportAccount,
+  exportAccountJson,
   SHOW_PRIVATE_KEY: 'SHOW_PRIVATE_KEY',
   showPrivateKey: showPrivateKey,
   exportAccountComplete,
@@ -2003,5 +2005,20 @@ function setPendingTokens (pendingTokens) {
 function clearPendingTokens () {
   return {
     type: actions.CLEAR_PENDING_TOKENS,
+  }
+}
+
+function exportAccountJson (privateKey) {
+  return (dispatch) => {
+    dispatch(actions.showLoadingIndication())
+    log.debug(`background.exportAccountJson`)
+    background.exportAccountJson(privateKey, (err, walletJson) => {
+
+      dispatch(actions.hideLoadingIndication())
+      if (err) {
+        return dispatch(actions.displayWarning(err.message))
+      }
+      exportAsFile('Wallet export', walletJson)
+    })
   }
 }
